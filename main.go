@@ -30,9 +30,11 @@ func main() {
 				}
 
 				calc.Cmd{
-					Owner:      owner,
-					Repository: repo,
-					Username:   username,
+					Owner:       owner,
+					Repository:  repo,
+					Username:    username,
+					AccessToken: c.String("access-token"),
+					Debug:       c.Bool("debug"),
 				}.Run()
 				return nil
 			},
@@ -41,6 +43,16 @@ func main() {
 					Name:   "username, u",
 					Usage:  "If set, average times for `USERNAME` will be displayed",
 					EnvVar: "NISEKOI_USERNAME",
+				},
+				cli.StringFlag{
+					Name:   "access-token, t",
+					Usage:  "If set, Nisekoi will use the access token provided for authentication",
+					EnvVar: "NISEKOI_ACCESS_TOKEN",
+				},
+				cli.BoolFlag{
+					Name:   "debug",
+					Usage:  "If set, debug output will be printed",
+					EnvVar: "NISEKOI_DEBUG",
 				},
 			},
 		},

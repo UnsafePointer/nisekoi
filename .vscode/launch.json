@@ -15,7 +15,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceRoot}",
-            "env": {},
+            "env": { "NISEKOI_ACCESS_TOKEN": ""},
             "args": ["calc", "CocoaPods"],
             "showLog": true
         }
