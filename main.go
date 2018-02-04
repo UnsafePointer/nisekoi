@@ -1,6 +1,7 @@
 package main
 
 import (
+	"nisekoi/calc"
 	"nisekoi/utils"
 	"os"
 
@@ -12,20 +13,27 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:        "calc",
-			Usage:       "nisekoi calc [<github-org> | <github-org/repo>]",
+			Usage:       "nisekoi calc [<owner> | <owner/repo>]",
 			Description: "Calculate average landing PR times",
 			Action: func(c *cli.Context) error {
 				lookup := c.Args().First()
-				if !utils.ValidateSearchTerm(lookup) {
-					return cli.NewExitError("The search term doesn't conform to [<github-org> | <github-org/repo>]", 1)
+				owner, repo, err := utils.ValidateSearchTerm(lookup)
+				if err != nil {
+					return cli.NewExitError("The search term doesn't conform to [<owner> | <owner/repo>]", 1)
 				}
 
 				username := c.String("username")
 				if len(username) > 0 {
-					if !utils.ValidateIdentifier(username) {
+					if utils.ValidateIdentifier(username) != nil {
 						return cli.NewExitError("The username provided is invalid", 2)
 					}
 				}
+
+				calc.Cmd{
+					Owner:      owner,
+					Repository: repo,
+					Username:   username,
+				}.Run()
 				return nil
 			},
 			Flags: []cli.Flag{
