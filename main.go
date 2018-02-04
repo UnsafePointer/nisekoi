@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"nisekoi/utils"
 	"os"
 
 	"gopkg.in/urfave/cli.v1"
@@ -15,6 +16,11 @@ func main() {
 			Usage:       "nisekoi calc [<github-org> | <github-org/repo>]",
 			Description: "Calculate average landing PR times",
 			Action: func(c *cli.Context) error {
+				lookup := c.Args().First()
+				if !utils.ValidateSearchTerm(lookup) {
+					return cli.NewExitError("The search term doesn't conform to [<github-org> | <github-org/repo>]", 1)
+				}
+
 				username := c.String("username")
 				fmt.Println(fmt.Sprintf("%s", username))
 				return nil
