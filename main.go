@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"nisekoi/utils"
 	"os"
 
@@ -22,7 +21,11 @@ func main() {
 				}
 
 				username := c.String("username")
-				fmt.Println(fmt.Sprintf("%s", username))
+				if len(username) > 0 {
+					if !utils.ValidateIdentifier(username) {
+						return cli.NewExitError("The username provided is invalid", 2)
+					}
+				}
 				return nil
 			},
 			Flags: []cli.Flag{
