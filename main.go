@@ -29,13 +29,16 @@ func main() {
 					}
 				}
 
-				calc.Cmd{
+				err = calc.Cmd{
 					Owner:       owner,
 					Repository:  repo,
 					Username:    username,
 					AccessToken: c.String("access-token"),
 					Debug:       c.Bool("debug"),
 				}.Run()
+				if err != nil {
+					return cli.NewExitError(err.Error(), 3)
+				}
 				return nil
 			},
 			Flags: []cli.Flag{

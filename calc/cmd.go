@@ -3,6 +3,7 @@ package calc
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -19,6 +20,11 @@ type Cmd struct {
 type Repository struct {
 	Owner string
 	Name  string
+}
+
+type Result struct {
+	PullRequests []*github.PullRequest
+	Err          error
 }
 
 func (cmd Cmd) Run() error {
@@ -40,18 +46,37 @@ func (cmd Cmd) Run() error {
 		repos = append(repos, response...)
 	}
 
-	timeAccumulator := float64(0)
-	prAccumulator := 0
+	c := make(chan Result, len(repos))
+	var wg sync.WaitGroup
 	for _, repo := range repos {
-		pullRequests, err := getPullRequests(ctx, client, repo)
+		wg.Add(1)
+		go func(val Repository) {
+			if cmd.Debug {
+				fmt.Printf("Executing goroutine for value: %s", val.Name)
+			}
+			pullRequests, err := getPullRequests(ctx, client, val)
+			c <- Result{PullRequests: pullRequests, Err: err}
+			wg.Done()
+		}(repo)
+	}
+	wg.Wait()
+	close(c)
+
+	timeAccumulator := float64(0)
+	prAccumulator := int64(0)
+
+	var cmdErr error
+	for result := range c {
+		pullRequests, err := result.PullRequests, result.Err
 		if err != nil {
-			return err
+			cmdErr = err
+			break
 		}
 		for _, pullRequest := range pullRequests {
-			delta := pullRequest.GetMergedAt().Sub(pullRequest.GetCreatedAt()).Hours()
-			if delta < 0 {
+			if pullRequest.GetMergedAt().IsZero() {
 				continue
 			}
+			delta := pullRequest.GetMergedAt().Sub(pullRequest.GetCreatedAt()).Hours()
 			timeAccumulator += delta
 			prAccumulator++
 			if cmd.Debug {
@@ -62,7 +87,7 @@ func (cmd Cmd) Run() error {
 
 	fmt.Printf("Average landing PR time is: %.2f hours, for a total of %d landed PRs\n", timeAccumulator/float64(prAccumulator), prAccumulator)
 
-	return nil
+	return cmdErr
 }
 
 func getPullRequests(ctx context.Context, client *github.Client, repository Repository) ([]*github.PullRequest, error) {
