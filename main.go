@@ -1,9 +1,10 @@
 package main
 
 import (
-	"nisekoi/calc"
-	"nisekoi/utils"
 	"os"
+
+	"github.com/Ruenzuo/nisekoi/calc"
+	"github.com/Ruenzuo/nisekoi/utils"
 
 	"gopkg.in/urfave/cli.v1"
 )
