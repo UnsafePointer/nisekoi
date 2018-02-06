@@ -40,7 +40,7 @@ Average landing PR time is: 1079.03 hours, for a total of 5 out of 273 landed PR
 #### With Docker
 
 ```
-$ ./docker-run.sh "calc --access-token 7cd6c98a93e94a0c79407d0e320323a0 CocoaPods"
+$ ./nisekoi "calc --access-token 7cd6c98a93e94a0c79407d0e320323a0 CocoaPods"
 GET https://api.github.com/repos/CocoaPods/Specs/pulls?page=22&per_page=100&state=closed: 403 You have triggered an abuse detection mechanism. Please wait a few minutes before you try again.
 Average landing PR time is: 140.92 hours, for a total of 3282 landed PRs
 ```
