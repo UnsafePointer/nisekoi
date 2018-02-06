@@ -11,11 +11,13 @@ import (
 
 func main() {
 	app := cli.NewApp()
+	app.Version = "1.0.0"
+	app.Usage = "Calculate average landing PR times"
 	app.Commands = []cli.Command{
 		{
-			Name:        "calc",
-			Usage:       "nisekoi calc [<owner> | <owner/repo>]",
-			Description: "Calculate average landing PR times",
+			Name:      "calc",
+			Usage:     "Calculate average landing PR times",
+			UsageText: "nisekoi calc [command options] [<owner> | <owner/repo>]",
 			Action: func(c *cli.Context) error {
 				lookup := c.Args().First()
 				owner, repo, err := utils.ValidateSearchTerm(lookup)
