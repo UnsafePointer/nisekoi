@@ -2,6 +2,8 @@
 
 > False love
 
+![build-status](https://circleci.com/gh/Ruenzuo/nisekoi.png?circle-token=f39277cfc2d19ca04b1d5aec1feee4105bc0826e)
+
 Calculate average landing PR times
 
 ### Usage
