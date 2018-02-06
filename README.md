@@ -32,12 +32,25 @@ GLOBAL OPTIONS:
 #### With `go get`
 
 ```
-go get github.com/Ruenzuo/nisekoi
-nisekoi ...
+$ go get github.com/Ruenzuo/nisekoi
+$ nisekoi calc --username Ruenzuo --access-token 7cd6c98a93e94a0c79407d0e320323a0 CocoaPods/Xcodeproj
+Average landing PR time is: 1079.03 hours, for a total of 5 out of 273 landed PRs
 ```
 
 #### With Docker
 
 ```
-./docker-run.sh "..."
+$ ./docker-run.sh "calc --access-token 7cd6c98a93e94a0c79407d0e320323a0 CocoaPods"
+GET https://api.github.com/repos/CocoaPods/Specs/pulls?page=22&per_page=100&state=closed: 403 You have triggered an abuse detection mechanism. Please wait a few minutes before you try again.
+Average landing PR time is: 140.92 hours, for a total of 3282 landed PRs
 ```
+
+### Know issues
+
+If you see something like this in the output log
+
+```
+GET https://api.github.com/repos/CocoaPods/CocoaPods/pulls?page=4&per_page=100&state=closed: 403 You have triggered an abuse detection mechanism. Please wait a few minutes before you try again.
+```
+
+It means the organization or repository you're trying to calculate is too big. The average returned is calculated with the most recent pull requests.
