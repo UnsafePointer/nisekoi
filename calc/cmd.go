@@ -94,10 +94,12 @@ func (cmd Cmd) Run() error {
 	}
 
 	userLanded := ""
+	average := timeAccumulator / float64(prAccumulator)
 	if len(cmd.Username) != 0 {
 		userLanded = fmt.Sprintf("%d out of ", userPrAccumulator)
+		average = timeAccumulator / float64(userPrAccumulator)
 	}
-	fmt.Printf("Average landing PR time is: %.2f hours, for a total of %s%d landed PRs\n", timeAccumulator/float64(prAccumulator), userLanded, prAccumulator)
+	fmt.Printf("Average landing PR time is: %.2f hours, for a total of %s%d landed PRs\n", average, userLanded, prAccumulator)
 
 	return cmdErr
 }
