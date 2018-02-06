@@ -3,6 +3,7 @@ package calc
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/google/go-github/github"
@@ -64,6 +65,7 @@ func (cmd Cmd) Run() error {
 
 	timeAccumulator := float64(0)
 	prAccumulator := int64(0)
+	userPrAccumulator := int64(0)
 
 	var cmdErr error
 	for result := range c {
@@ -73,19 +75,29 @@ func (cmd Cmd) Run() error {
 			break
 		}
 		for _, pullRequest := range pullRequests {
+			prAccumulator++
 			if pullRequest.GetMergedAt().IsZero() {
 				continue
 			}
+			if len(cmd.Username) != 0 {
+				if !strings.EqualFold(pullRequest.GetUser().GetLogin(), cmd.Username) {
+					continue
+				}
+				userPrAccumulator++
+			}
 			delta := pullRequest.GetMergedAt().Sub(pullRequest.GetCreatedAt()).Hours()
 			timeAccumulator += delta
-			prAccumulator++
 			if cmd.Debug {
 				fmt.Printf("PR: %s\nCreated at: %v\nMerged at:%v\nDelta in hours: %f\n", pullRequest.GetTitle(), pullRequest.GetCreatedAt(), pullRequest.GetMergedAt(), delta)
 			}
 		}
 	}
 
-	fmt.Printf("Average landing PR time is: %.2f hours, for a total of %d landed PRs\n", timeAccumulator/float64(prAccumulator), prAccumulator)
+	userLanded := ""
+	if len(cmd.Username) != 0 {
+		userLanded = fmt.Sprintf("%d out of ", userPrAccumulator)
+	}
+	fmt.Printf("Average landing PR time is: %.2f hours, for a total of %s%d landed PRs\n", timeAccumulator/float64(prAccumulator), userLanded, prAccumulator)
 
 	return cmdErr
 }
