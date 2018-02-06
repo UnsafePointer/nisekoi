@@ -3,6 +3,7 @@ package calc
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"sync"
 
@@ -30,10 +31,13 @@ type Result struct {
 
 func (cmd Cmd) Run() error {
 	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: cmd.AccessToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
+	var tc *http.Client
+	if len(cmd.AccessToken) != 0 {
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: cmd.AccessToken},
+		)
+		tc = oauth2.NewClient(ctx, ts)
+	}
 	client := github.NewClient(tc)
 
 	var repos []Repository
